@@ -76,3 +76,41 @@
   font-size:medium;
  }
 
+ table{
+  display: block;
+  overflow: hidden;
+  table-layout: auto;
+  border-collapse: collapse;
+  box-shadow: 0px 10px 10px #ccc;
+  border-radius: 10px;
+  white-space: nowrap;
+  width: 50em;
+  max-width: 40%;
+  height: 300px;
+  overflow-x: auto;
+}
+table thead{
+  background-color: #fff;
+  font-size: 18px;
+}
+table th{
+  padding: 0.6rem;
+  text-align: center;
+  font-weight: 500;
+}
+table td{
+  padding: 0.6rem;
+  text-align: center;
+  font-weight: 500;
+  color: #fff;
+}
+table td{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table tbody tr:hover {
+  background-color: blue;
+}
+.expand{
+  width: 100%;
+}

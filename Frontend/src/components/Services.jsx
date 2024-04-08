@@ -11,14 +11,52 @@ import ReactPlayer from 'react-player'
 const Services = () => {
   return (
     <div>
-      <div className="text-primary bg-info d-flex m-5 ps-5 pt-5 pb-5 border-start border-danger justify-content-between border-5 rounded-end">
+      <div className="text-primary bg-info m-5 ps-5 pt-5 pb-5 border-start border-danger border-5 rounded-end">
           <div className="ms-5">
-            <h1><Bookservice/>to indulge and give in to your passion... </h1>
-            <h2>...feel free to explore Services below </h2>
+            <h1>Looking out for Perfect nails for an event or occassion</h1>
+            <h2>Select below to indulge and give in to your passion...</h2>
           </div>
+
+          <div className="d-flex justify-content-between">
+          <div className="section ms-5">
+       <table>
+        <thead>
+          <tr>
+            <th className='expand'>Service</th>
+            <th className='expand'>Cost in ksh</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Just gel</td>
+            <td>500</td>
+          </tr>
+          <tr>
+            <td>Builder + gel</td>
+            <td>1000</td>
+          </tr>
+          <tr>
+            <td>Tips + gel</td>
+            <td>1000</td>
+          </tr>
+          <tr>
+            <td> Tips Builder + gel</td>
+            <td>1500</td>
+          </tr>
+          <tr>
+            <td>Gum gel</td>
+            <td>1500</td>
+          </tr>
+          <tr>
+            <td>Aclyrics</td>
+            <td>2500</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
         
           <div className="container">
-  <div id="carouselExampleAutoplaying" className="carousel slide w-25 m-auto" data-bs-ride="carousel" data-bs-interval="2000">
+  <div id="carouselExampleAutoplaying" className="carousel slide w-75 me-5" data-bs-ride="carousel" data-bs-interval="2000">
 
     <div className="carousel-inner rounded-5">
       <div className="carousel-item active">
@@ -40,6 +78,7 @@ const Services = () => {
       <span className="visually-hidden">Next</span>
     </button>
   </div>
+</div>
 </div>
 </div>
 
