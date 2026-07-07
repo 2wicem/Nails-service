@@ -1,9 +1,12 @@
-from .models import UserRole
+from .models import TechnicianApprovalStatus, UserRole
 
 
 def user_to_dict(user):
     profile = getattr(user, 'profile', None)
     role = profile.role if profile else UserRole.CLIENT
+    technician_approval = (
+        profile.technician_approval if profile else TechnicianApprovalStatus.NOT_APPLICABLE
+    )
 
     return {
         'id': user.id,
@@ -11,6 +14,8 @@ def user_to_dict(user):
         'email': user.email,
         'phone': profile.phone if profile else '',
         'role': role,
+        'technician_approval': technician_approval,
+        'technician_pending': technician_approval == TechnicianApprovalStatus.PENDING,
         'default_location': profile.default_location if profile else '',
         'is_staff': user.is_staff,
     }

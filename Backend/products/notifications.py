@@ -202,3 +202,35 @@ def notify_contact_message_created(contact_message) -> dict:
         'email_sent': send_contact_email(contact_message),
         'sms_sent': send_contact_sms(contact_message),
     }
+
+
+def send_password_reset_email(user, reset_url: str) -> bool:
+    if not user.email:
+        logger.warning('Password reset skipped: user %s has no email.', user.username)
+        return False
+
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        logger.warning('Password reset email skipped: EMAIL_HOST_USER/PASSWORD not set.')
+        return False
+
+    name = user.first_name or user.username
+    body = (
+        f'Hi {name},\n\n'
+        'We received a request to reset your Dopekit password.\n\n'
+        f'Open this link to choose a new password (valid for 24 hours):\n{reset_url}\n\n'
+        'If you did not request this, you can ignore this email.\n'
+    )
+
+    try:
+        send_mail(
+            subject='Reset your Dopekit password',
+            message=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        logger.info('Password reset email sent to %s', user.email)
+        return True
+    except Exception:
+        logger.exception('Failed to send password reset email to %s', user.email)
+        return False

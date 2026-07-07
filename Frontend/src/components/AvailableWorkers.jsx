@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import Bookservice from './Bookservice'
+import { apiFetch } from '../config/api'
 
-const WORKERS_URL = '/api/products/workers/'
+const WORKERS_PATH = '/products/workers/'
 
 const formatNextSlot = (nextSlot) => {
   if (!nextSlot) {
@@ -31,7 +32,7 @@ const AvailableWorkers = () => {
 
     const loadWorkers = async () => {
       try {
-        const response = await fetch(WORKERS_URL)
+        const response = await apiFetch(WORKERS_PATH)
         const text = await response.text()
         const data = text ? JSON.parse(text) : {}
 

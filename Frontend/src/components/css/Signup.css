@@ -164,6 +164,27 @@
   margin-top: 0.65rem;
 }
 
+.signup-forgot-link {
+  font-size: 0.78rem;
+  color: var(--dk-accent-soft, #f8d0de);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-forgot-link:hover {
+  color: var(--dk-gold-soft, #f5d9a8);
+}
+
+.signup-password-hint {
+  font-size: 0.78rem;
+  color: var(--dk-text-muted, #e0cdd6);
+  margin: 0.35rem 0 0;
+}
+
+.signup-debug-link {
+  font-size: 0.82rem;
+}
+
 .signup-link {
   color: var(--dk-accent-soft, #f8d0de);
   font-weight: 600;

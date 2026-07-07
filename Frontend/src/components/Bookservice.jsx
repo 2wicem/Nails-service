@@ -11,12 +11,9 @@ import {
   venueLocationPlaceholder,
 } from '../constants/serviceVenue'
 import { useAuth } from '../context/useAuth'
+import { apiFetch } from '../config/api'
 import BrandLogo from './BrandLogo'
 import './css/Bookservice.css'
-
-const API_URL = '/api/products/bookings/'
-const SLOTS_URL = '/api/products/slots/'
-const WORKERS_URL = '/api/products/workers/'
 
 const emptyForm = { name: '', phone: '', location: '', service: '', venue: 'indoor' }
 
@@ -102,7 +99,7 @@ const Bookservice = ({
     setWorkersLoading(true)
 
     try {
-      const response = await fetch(WORKERS_URL)
+      const response = await apiFetch('/products/workers/')
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
 
@@ -128,7 +125,7 @@ const Bookservice = ({
         params.set('worker_id', String(filterWorkerId))
       }
 
-      const response = await fetch(`${SLOTS_URL}?${params.toString()}`, { credentials: 'include' })
+      const response = await apiFetch(`/products/slots/?${params.toString()}`)
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
 
@@ -247,10 +244,8 @@ const Bookservice = ({
     }
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await apiFetch('/products/bookings/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload),
       })
 

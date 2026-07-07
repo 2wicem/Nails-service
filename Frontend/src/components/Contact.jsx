@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import contactEnvelope from './images/contact-envelope.svg'
 import { useAuth } from '../context/useAuth'
+import { apiFetch } from '../config/api'
 import './css/Contact.css'
 
-const CONTACT_API = '/api/products/contact/'
-const CONTACT_INFO_API = '/api/products/contact/info/'
+const CONTACT_PATH = '/products/contact/'
+const CONTACT_INFO_PATH = '/products/contact/info/'
 
 const DEFAULT_CONTACT_INFO = {
   phones: ['0790331108', '0727083181'],
@@ -59,7 +60,7 @@ const Contact = () => {
 
   const loadContactInfo = useCallback(async () => {
     try {
-      const response = await fetch(CONTACT_INFO_API)
+      const response = await apiFetch(CONTACT_INFO_PATH)
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
 
@@ -106,10 +107,8 @@ const Contact = () => {
     setNoteStatus(null)
 
     try {
-      const response = await fetch(CONTACT_API, {
+      const response = await apiFetch(CONTACT_PATH, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ name, phone, email, message }),
       })
 

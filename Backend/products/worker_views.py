@@ -14,8 +14,10 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Booking, BookingStatus, SlotStatus, TimeSlot, UserRole
 from .slot_utils import SLOT_HOURS, format_slot_label
-from .slot_views import _parse_date, _require_worker
+from .slot_views import _parse_date
+from .technician_utils import is_approved_technician
 from .views import _booking_to_dict, _forbidden
+from .worker_permissions import require_approved_worker
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -65,6 +67,9 @@ def list_public_workers(request):
 
     workers = []
     for user in staff:
+        profile = user.profile
+        if profile.role == UserRole.WORKER and not is_approved_technician(profile):
+            continue
         available_qs = TimeSlot.objects.filter(
             worker=user,
             date__gte=today,
@@ -106,7 +111,7 @@ def list_public_workers(request):
 
 @require_http_methods(['GET'])
 def worker_bookings(request):
-    worker, denied = _require_worker(request)
+    worker, denied = require_approved_worker(request)
     if denied:
         return denied
 
@@ -124,7 +129,7 @@ def worker_bookings(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def accept_booking(request, booking_id):
-    worker, denied = _require_worker(request)
+    worker, denied = require_approved_worker(request)
     if denied:
         return denied
 
@@ -161,7 +166,7 @@ def accept_booking(request, booking_id):
 @csrf_exempt
 @require_http_methods(['POST'])
 def cancel_booking_worker(request, booking_id):
-    worker, denied = _require_worker(request)
+    worker, denied = require_approved_worker(request)
     if denied:
         return denied
 
@@ -199,7 +204,7 @@ def cancel_booking_worker(request, booking_id):
 @csrf_exempt
 @require_http_methods(['POST'])
 def off_day(request):
-    worker, denied = _require_worker(request)
+    worker, denied = require_approved_worker(request)
     if denied:
         return denied
 

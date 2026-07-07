@@ -17,6 +17,13 @@ const ProtectedRoute = ({ children, roles = null }) => {
     return <Navigate to="/login" replace />
   }
 
+  if (
+    user.technician_pending ||
+    (user.technician_approval === 'rejected' && roles?.includes('worker'))
+  ) {
+    return <Navigate to="/technician-pending" replace />
+  }
+
   if (roles && !roles.includes(user.role)) {
     return <Navigate to="/" replace />
   }

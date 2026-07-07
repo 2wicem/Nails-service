@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ClientBookingList from './ClientBookingList'
+import { apiFetch } from '../config/api'
 import './css/Dashboard.css'
 
-const MY_BOOKINGS_URL = '/api/products/bookings/mine/'
+const MY_BOOKINGS_PATH = '/products/bookings/mine/'
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([])
@@ -13,7 +14,7 @@ const MyBookings = () => {
   useEffect(() => {
     const loadBookings = async () => {
       try {
-        const response = await fetch(MY_BOOKINGS_URL, { credentials: 'include' })
+        const response = await apiFetch(MY_BOOKINGS_PATH)
         const text = await response.text()
         const data = text ? JSON.parse(text) : {}
 

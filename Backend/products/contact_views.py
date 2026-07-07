@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import ContactMessage, SalonContactInfo
 from .notifications import notify_contact_message_created
+from .rate_limit import rate_limit
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,7 @@ def get_contact_info(request):
 
 @csrf_exempt
 @require_http_methods(['POST'])
+@rate_limit('contact_create')
 def create_contact_message(request):
     try:
         data = json.loads(request.body)

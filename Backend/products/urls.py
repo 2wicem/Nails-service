@@ -18,7 +18,11 @@ urlpatterns = [
     path('slots/toggle/', slot_views.toggle_slot, name='toggle_slot'),
     path('slots/off-day/', worker_views.off_day, name='off_day'),
     path('auth/register/', auth_views.register, name='register'),
+    path('auth/signup-config/', auth_views.signup_config, name='signup_config'),
+    path('auth/csrf/', auth_views.csrf_bootstrap, name='csrf_bootstrap'),
     path('auth/login/', auth_views.login_view, name='login'),
+    path('auth/forgot-password/', auth_views.forgot_password, name='forgot_password'),
+    path('auth/reset-password/', auth_views.reset_password, name='reset_password'),
     path('auth/logout/', auth_views.logout_view, name='logout'),
     path('auth/me/', auth_views.me, name='me'),
     path('admin/stats/', admin_views.stats, name='admin_stats'),
@@ -27,6 +31,9 @@ urlpatterns = [
     path('admin/contact-info/update/', admin_views.update_salon_contact_info, name='admin_update_contact_info'),
     path('admin/users/', admin_views.list_users, name='admin_list_users'),
     path('admin/users/<int:user_id>/role/', admin_views.update_user_role, name='admin_update_role'),
+    path('admin/technicians/pending/', admin_views.list_pending_technicians, name='admin_pending_technicians'),
+    path('admin/technicians/<int:user_id>/approve/', admin_views.approve_technician, name='admin_approve_technician'),
+    path('admin/technicians/<int:user_id>/reject/', admin_views.reject_technician_view, name='admin_reject_technician'),
     path('admin/bookings/<int:booking_id>/', admin_views.delete_booking, name='admin_delete_booking'),
 ]
    

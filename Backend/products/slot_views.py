@@ -10,6 +10,7 @@ from django.views.decorators.http import require_http_methods
 from .models import SlotStatus, TimeSlot, UserRole
 from .slot_utils import SLOT_HOURS, format_slot_label, parse_date
 from .views import _booking_to_dict, _forbidden, _unauthorized
+from .worker_permissions import require_approved_worker
 
 User = get_user_model()
 
@@ -19,12 +20,7 @@ def _parse_date(value):
 
 
 def _require_worker(request):
-    if not request.user.is_authenticated:
-        return None, _unauthorized()
-    profile = getattr(request.user, 'profile', None)
-    if not profile or profile.role not in (UserRole.WORKER, UserRole.ADMIN):
-        return None, _forbidden('Only workers can manage time slots.')
-    return request.user, None
+    return require_approved_worker(request)
 
 
 def _slot_to_dict(slot):

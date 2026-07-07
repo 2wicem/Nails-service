@@ -1,10 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useState } from 'react'
 import { todayIso } from '../constants/slots'
+import { apiFetch } from '../config/api'
 import './css/Dashboard.css'
 
-const MANAGE_URL = '/api/products/slots/manage/'
-const TOGGLE_URL = '/api/products/slots/toggle/'
+const MANAGE_PATH = '/products/slots/manage/'
+const TOGGLE_PATH = '/products/slots/toggle/'
+const OFF_DAY_PATH = '/products/slots/off-day/'
 
 const STATUS_LABELS = {
   available: 'Available',
@@ -27,14 +29,12 @@ const WorkerSchedule = ({ onChanged = null }) => {
   const [status, setStatus] = useState(null)
   const [offDayLoading, setOffDayLoading] = useState(false)
 
-  const OFF_DAY_URL = '/api/products/slots/off-day/'
-
   const loadSlots = useCallback(async () => {
     setLoading(true)
     setStatus(null)
 
     try {
-      const response = await fetch(`${MANAGE_URL}?date=${date}`, { credentials: 'include' })
+      const response = await apiFetch(`${MANAGE_PATH}?date=${date}`)
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
 
@@ -71,10 +71,8 @@ const WorkerSchedule = ({ onChanged = null }) => {
     setStatus(null)
 
     try {
-      const response = await fetch(TOGGLE_URL, {
+      const response = await apiFetch(TOGGLE_PATH, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           date,
           start_hour: slot.start_hour,
@@ -113,10 +111,8 @@ const WorkerSchedule = ({ onChanged = null }) => {
     setStatus(null)
 
     try {
-      const response = await fetch(OFF_DAY_URL, {
+      const response = await apiFetch(OFF_DAY_PATH, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ date }),
       })
 

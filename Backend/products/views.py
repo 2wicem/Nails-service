@@ -9,9 +9,12 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
+from .http_responses import forbidden, unauthorized
 from .models import Booking, BookingStatus, ServiceVenue, TimeSlot, UserRole
 from .notifications import notify_booking_created
+from .rate_limit import rate_limit
 from .slot_utils import parse_date
+from .worker_permissions import require_approved_worker
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -22,11 +25,11 @@ def index(request):
 
 
 def _forbidden(message='Permission denied.'):
-    return JsonResponse({'error': message}, status=403)
+    return forbidden(message)
 
 
 def _unauthorized(message='Authentication required.'):
-    return JsonResponse({'error': message}, status=401)
+    return unauthorized(message)
 
 
 def _booking_to_dict(booking):
@@ -98,6 +101,11 @@ def list_bookings(request):
     if not profile or profile.role not in (UserRole.WORKER, UserRole.ADMIN):
         return _forbidden('Only workers and admins can view all bookings.')
 
+    if profile.role == UserRole.WORKER:
+        _, denied = require_approved_worker(request)
+        if denied:
+            return denied
+
     from .worker_views import _worker_bookings_queryset
 
     bookings = _worker_bookings_queryset(request.user)[:100]
@@ -106,6 +114,7 @@ def list_bookings(request):
 
 @csrf_exempt
 @require_http_methods(['POST'])
+@rate_limit('booking_create')
 def create_booking(request):
     try:
         data = json.loads(request.body)

@@ -2,18 +2,21 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROLE_LABELS } from '../constants/roles'
 import { useAuth } from '../context/useAuth'
+import { apiFetch } from '../config/api'
 import BookingsTable, { RoleBadge } from './BookingsTable'
 import './css/Dashboard.css'
 
-const STATS_URL = '/api/products/admin/stats/'
-const USERS_URL = '/api/products/admin/users/'
-const BOOKINGS_URL = '/api/products/bookings/list/'
-const MESSAGES_URL = '/api/products/admin/messages/'
+const STATS_PATH = '/products/admin/stats/'
+const USERS_PATH = '/products/admin/users/'
+const BOOKINGS_PATH = '/products/bookings/list/'
+const MESSAGES_PATH = '/products/admin/messages/'
+const PENDING_TECHNICIANS_PATH = '/products/admin/technicians/pending/'
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'bookings', label: 'Bookings' },
   { id: 'messages', label: 'Messages' },
+  { id: 'technicians', label: 'Technicians' },
   { id: 'users', label: 'Users' },
 ]
 
@@ -24,9 +27,11 @@ const AdminPanel = () => {
   const [users, setUsers] = useState([])
   const [bookings, setBookings] = useState([])
   const [messages, setMessages] = useState([])
+  const [pendingTechnicians, setPendingTechnicians] = useState([])
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [updatingUserId, setUpdatingUserId] = useState(null)
+  const [reviewingUserId, setReviewingUserId] = useState(null)
   const [deletingBookingId, setDeletingBookingId] = useState(null)
 
   const loadData = useCallback(async () => {
@@ -34,11 +39,12 @@ const AdminPanel = () => {
     setStatus(null)
 
     try {
-      const [statsRes, usersRes, bookingsRes, messagesRes] = await Promise.all([
-        fetch(STATS_URL, { credentials: 'include' }),
-        fetch(USERS_URL, { credentials: 'include' }),
-        fetch(BOOKINGS_URL, { credentials: 'include' }),
-        fetch(MESSAGES_URL, { credentials: 'include' }),
+      const [statsRes, usersRes, bookingsRes, messagesRes, pendingRes] = await Promise.all([
+        apiFetch(STATS_PATH),
+        apiFetch(USERS_PATH),
+        apiFetch(BOOKINGS_PATH),
+        apiFetch(MESSAGES_PATH),
+        apiFetch(PENDING_TECHNICIANS_PATH),
       ])
 
       const parse = async (response) => {
@@ -50,17 +56,19 @@ const AdminPanel = () => {
         return data
       }
 
-      const [statsData, usersData, bookingsData, messagesData] = await Promise.all([
+      const [statsData, usersData, bookingsData, messagesData, pendingData] = await Promise.all([
         parse(statsRes),
         parse(usersRes),
         parse(bookingsRes),
         parse(messagesRes),
+        parse(pendingRes),
       ])
 
       setStats(statsData)
       setUsers(usersData.users || [])
       setBookings(bookingsData.bookings || [])
       setMessages(messagesData.messages || [])
+      setPendingTechnicians(pendingData.technicians || [])
     } catch (error) {
       setStatus({ type: 'error', message: error.message })
     } finally {
@@ -77,10 +85,8 @@ const AdminPanel = () => {
     setStatus(null)
 
     try {
-      const response = await fetch(`/api/products/admin/users/${userId}/role/`, {
+      const response = await apiFetch(`/products/admin/users/${userId}/role/`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ role }),
       })
 
@@ -95,7 +101,7 @@ const AdminPanel = () => {
         current.map((entry) => (entry.id === userId ? data.user : entry))
       )
       setStatus({ type: 'success', message: data.message })
-      const statsRes = await fetch(STATS_URL, { credentials: 'include' })
+      const statsRes = await apiFetch(STATS_PATH)
       const statsText = await statsRes.text()
       if (statsRes.ok && statsText) {
         setStats(JSON.parse(statsText))
@@ -104,6 +110,44 @@ const AdminPanel = () => {
       setStatus({ type: 'error', message: error.message })
     } finally {
       setUpdatingUserId(null)
+    }
+  }
+
+  const handleTechnicianReview = async (userId, action) => {
+    setReviewingUserId(userId)
+    setStatus(null)
+
+    try {
+      const response = await apiFetch(`/products/admin/technicians/${userId}/${action}/`, {
+        method: 'POST',
+      })
+
+      const text = await response.text()
+      const data = text ? JSON.parse(text) : {}
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Could not update application.')
+      }
+
+      setPendingTechnicians((current) => current.filter((entry) => entry.id !== userId))
+      setUsers((current) => {
+        const exists = current.some((entry) => entry.id === userId)
+        if (!exists) {
+          return [data.user, ...current]
+        }
+        return current.map((entry) => (entry.id === userId ? data.user : entry))
+      })
+      setStatus({ type: 'success', message: data.message })
+
+      const statsRes = await apiFetch(STATS_PATH)
+      const statsText = await statsRes.text()
+      if (statsRes.ok && statsText) {
+        setStats(JSON.parse(statsText))
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: error.message })
+    } finally {
+      setReviewingUserId(null)
     }
   }
 
@@ -116,9 +160,8 @@ const AdminPanel = () => {
     setStatus(null)
 
     try {
-      const response = await fetch(`/api/products/admin/bookings/${bookingId}/`, {
+      const response = await apiFetch(`/products/admin/bookings/${bookingId}/`, {
         method: 'DELETE',
-        credentials: 'include',
       })
 
       const text = await response.text()
@@ -205,9 +248,63 @@ const AdminPanel = () => {
                   <span className="dashboard-stat-label">{ROLE_LABELS.worker}s</span>
                 </div>
                 <div className="dashboard-stat-card">
+                  <span className="dashboard-stat-value">{stats.pending_technicians ?? 0}</span>
+                  <span className="dashboard-stat-label">Pending technicians</span>
+                </div>
+                <div className="dashboard-stat-card">
                   <span className="dashboard-stat-value">{stats.admins}</span>
                   <span className="dashboard-stat-label">{ROLE_LABELS.admin}s</span>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'technicians' && (
+              <div className="dashboard-table-wrap table-responsive">
+                {pendingTechnicians.length === 0 ? (
+                  <p className="text-center text-muted dashboard-empty">
+                    No pending technician applications.
+                  </p>
+                ) : (
+                  <table className="table dashboard-table table-hover mb-0">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Applied</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingTechnicians.map((entry) => (
+                        <tr key={entry.id}>
+                          <td>{entry.name}</td>
+                          <td>{entry.email}</td>
+                          <td>{entry.phone || '—'}</td>
+                          <td>{new Date(entry.date_joined).toLocaleDateString()}</td>
+                          <td className="text-nowrap">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-success me-2"
+                              disabled={reviewingUserId === entry.id}
+                              onClick={() => handleTechnicianReview(entry.id, 'approve')}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              disabled={reviewingUserId === entry.id}
+                              onClick={() => handleTechnicianReview(entry.id, 'reject')}
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
 
@@ -263,6 +360,7 @@ const AdminPanel = () => {
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Role</th>
+                        <th>Status</th>
                         <th>Joined</th>
                       </tr>
                     </thead>
@@ -287,6 +385,16 @@ const AdminPanel = () => {
                                 <option value="admin">{ROLE_LABELS.admin}</option>
                               </select>
                             )}
+                          </td>
+                          <td>
+                            {entry.technician_approval === 'pending'
+                              ? 'Pending approval'
+                              : entry.technician_approval === 'rejected'
+                                ? 'Rejected'
+                                : entry.technician_approval === 'approved' &&
+                                    entry.role === 'worker'
+                                  ? 'Approved'
+                                  : '—'}
                           </td>
                           <td>{new Date(entry.date_joined).toLocaleDateString()}</td>
                         </tr>

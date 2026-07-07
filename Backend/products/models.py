@@ -8,6 +8,13 @@ class UserRole(models.TextChoices):
     ADMIN = 'admin', 'Admin'
 
 
+class TechnicianApprovalStatus(models.TextChoices):
+    NOT_APPLICABLE = 'na', 'Not applicable'
+    PENDING = 'pending', 'Pending approval'
+    APPROVED = 'approved', 'Approved'
+    REJECTED = 'rejected', 'Rejected'
+
+
 class BookingStatus(models.TextChoices):
     PENDING = 'pending', 'Pending'
     ACCEPTED = 'accepted', 'Accepted'
@@ -109,6 +116,11 @@ class UserProfile(models.Model):
         max_length=10,
         choices=UserRole.choices,
         default=UserRole.CLIENT,
+    )
+    technician_approval = models.CharField(
+        max_length=10,
+        choices=TechnicianApprovalStatus.choices,
+        default=TechnicianApprovalStatus.NOT_APPLICABLE,
     )
     default_location = models.CharField(max_length=200, blank=True, default='')
 

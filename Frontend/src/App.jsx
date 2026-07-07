@@ -10,6 +10,10 @@ import Landing from "./components/Landing"
 
 import Login from "./components/Login"
 
+import ForgotPassword from "./components/ForgotPassword"
+
+import ResetPassword from "./components/ResetPassword"
+
 import MyBookings from "./components/MyBookings"
 
 import Navbar from "./components/Navbar"
@@ -19,6 +23,8 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import Services from "./components/Services"
 
 import Signup from "./components/Signup"
+
+import TechnicianPending from "./components/TechnicianPending"
 
 import WorkerDashboard from "./components/WorkerDashboard"
 
@@ -55,6 +61,19 @@ const AppShell = () => {
         <Route path='/signup' element={<Signup />} />
 
         <Route path='/login' element={<Login />} />
+
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+
+        <Route path='/reset-password' element={<ResetPassword />} />
+
+        <Route
+          path='/technician-pending'
+          element={
+            <ProtectedRoute>
+              <TechnicianPending />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
 

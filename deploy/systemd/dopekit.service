@@ -1,0 +1,20 @@
+# systemd unit for Gunicorn on a VPS.
+# Copy to /etc/systemd/system/dopekit.service then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now dopekit
+
+[Unit]
+Description=Dopekit Django API (Gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/dopekit/Backend
+EnvironmentFile=/var/www/dopekit/Backend/.env
+ExecStart=/var/www/dopekit/Backend/.venv/bin/gunicorn bootstrap.wsgi:application --config gunicorn.conf.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -8,8 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from .auth_utils import user_to_dict
-from .models import Booking, ContactMessage, SalonContactInfo, SlotStatus, TimeSlot, UserProfile, UserRole
+from .models import Booking, ContactMessage, SalonContactInfo, SlotStatus, TechnicianApprovalStatus, TimeSlot, UserProfile, UserRole
 from .contact_views import _salon_contact_to_dict
+from .technician_utils import auto_approve_technician, reject_technician
 from .views import _booking_to_dict, _forbidden, _unauthorized
 
 User = get_user_model()
@@ -52,6 +53,9 @@ def stats(request):
             'clients': counts_by_role.get(UserRole.CLIENT, 0),
             'workers': counts_by_role.get(UserRole.WORKER, 0),
             'admins': counts_by_role.get(UserRole.ADMIN, 0),
+            'pending_technicians': UserProfile.objects.filter(
+                technician_approval=TechnicianApprovalStatus.PENDING
+            ).count(),
         }
     )
 
@@ -174,6 +178,16 @@ def update_user_role(request, user_id):
         defaults={'phone': '', 'role': UserRole.CLIENT},
     )
     profile.role = role
+    if role == UserRole.WORKER:
+        profile.technician_approval = TechnicianApprovalStatus.APPROVED
+    elif role == UserRole.ADMIN:
+        profile.technician_approval = TechnicianApprovalStatus.NOT_APPLICABLE
+    elif profile.technician_approval in (
+        TechnicianApprovalStatus.PENDING,
+        TechnicianApprovalStatus.APPROVED,
+        TechnicianApprovalStatus.REJECTED,
+    ):
+        profile.technician_approval = TechnicianApprovalStatus.NOT_APPLICABLE
     profile.save()
 
     return JsonResponse(
@@ -199,3 +213,61 @@ def delete_booking(request, booking_id):
     booking.delete()
 
     return JsonResponse({'message': 'Booking deleted successfully.'})
+
+
+@require_http_methods(['GET'])
+def list_pending_technicians(request):
+    denied = _require_admin(request)
+    if denied:
+        return denied
+
+    users = (
+        User.objects.filter(profile__technician_approval=TechnicianApprovalStatus.PENDING)
+        .select_related('profile')
+        .order_by('-date_joined')[:100]
+    )
+    return JsonResponse({'technicians': [_admin_user_to_dict(user) for user in users]})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def approve_technician(request, user_id):
+    denied = _require_admin(request)
+    if denied:
+        return denied
+
+    target = get_object_or_404(User.objects.select_related('profile'), pk=user_id)
+    profile = getattr(target, 'profile', None)
+    if not profile or profile.technician_approval != TechnicianApprovalStatus.PENDING:
+        return JsonResponse({'error': 'No pending technician application for this user.'}, status=400)
+
+    auto_approve_technician(profile)
+
+    return JsonResponse(
+        {
+            'message': 'Technician approved.',
+            'user': _admin_user_to_dict(target),
+        }
+    )
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def reject_technician_view(request, user_id):
+    denied = _require_admin(request)
+    if denied:
+        return denied
+
+    target = get_object_or_404(User.objects.select_related('profile'), pk=user_id)
+    profile = getattr(target, 'profile', None)
+    if not profile or profile.technician_approval != TechnicianApprovalStatus.PENDING:
+        return JsonResponse({'error': 'No pending technician application for this user.'}, status=400)
+
+    reject_technician(profile)
+
+    return JsonResponse(
+        {
+            'message': 'Technician application rejected.',
+            'user': _admin_user_to_dict(target),
+        }
+    )

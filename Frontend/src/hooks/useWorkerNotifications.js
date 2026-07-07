@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { apiFetch } from '../config/api'
 
 const POLL_MS = 45000
 
@@ -79,7 +80,7 @@ export const useWorkerNotifications = ({ bookings, enabled, onOpenBooking }) => 
 
     const poll = async () => {
       try {
-        const response = await fetch('/api/products/bookings/worker/', { credentials: 'include' })
+        const response = await apiFetch('/products/bookings/worker/')
         if (!response.ok) {
           return
         }

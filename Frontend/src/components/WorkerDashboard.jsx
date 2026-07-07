@@ -7,9 +7,10 @@ import BrandLogo from './BrandLogo'
 import InstallPrompt from './InstallPrompt'
 import WorkerBookingList from './WorkerBookingList'
 import WorkerSchedule from './WorkerSchedule'
+import { apiFetch } from '../config/api'
 import './css/WorkerApp.css'
 
-const WORKER_BOOKINGS_URL = '/api/products/bookings/worker/'
+const WORKER_BOOKINGS_PATH = '/products/bookings/worker/'
 
 const WorkerDashboard = () => {
   const { user, logout } = useAuth()
@@ -34,7 +35,7 @@ const WorkerDashboard = () => {
     setStatus(null)
 
     try {
-      const response = await fetch(WORKER_BOOKINGS_URL, { credentials: 'include' })
+      const response = await apiFetch(WORKER_BOOKINGS_PATH)
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
 
@@ -80,9 +81,8 @@ const WorkerDashboard = () => {
     setStatus(null)
 
     try {
-      const response = await fetch(`/api/products/bookings/${bookingId}/${action}/`, {
+      const response = await apiFetch(`/products/bookings/${bookingId}/${action}/`, {
         method: 'POST',
-        credentials: 'include',
       })
       const text = await response.text()
       const data = text ? JSON.parse(text) : {}
