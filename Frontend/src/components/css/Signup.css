@@ -1,0 +1,200 @@
+.signup-page {
+  min-height: calc(100vh - 220px);
+  display: flex;
+  align-items: center;
+}
+
+.signup-card {
+  max-width: 440px;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(
+    165deg,
+    var(--dk-plum-deep, #3a1f33) 0%,
+    #4a2a42 45%,
+    #3d3040 100%
+  );
+  border: 1px solid rgba(255, 143, 171, 0.35);
+  box-shadow: 0 16px 48px rgba(58, 31, 51, 0.45);
+}
+
+.signup-card-header {
+  padding: 1.5rem 1.25rem 1rem;
+  background: linear-gradient(
+    120deg,
+    #6d3557 0%,
+    #b84d72 55%,
+    var(--dk-accent, #e06b8a) 100%
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.signup-card-header .brand-logo {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  margin-bottom: 0.75rem;
+}
+
+.signup-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--dk-gold-soft, #f5d9a8);
+  margin-bottom: 0.35rem;
+}
+
+.signup-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 248, 250, 0.88);
+  margin-bottom: 0;
+  line-height: 1.45;
+}
+
+.signup-card-body {
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    rgba(109, 53, 87, 0.22) 0%,
+    rgba(58, 31, 51, 0.12) 100%
+  );
+}
+
+.signup-account-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  margin-bottom: 1.15rem;
+}
+
+.signup-account-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 143, 171, 0.28);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--dk-text-muted, #e0cdd6);
+  text-align: left;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.signup-account-option:hover {
+  border-color: rgba(255, 143, 171, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.signup-account-option.is-active {
+  border-color: var(--dk-accent-bright, #ff8fab);
+  background: rgba(255, 143, 171, 0.14);
+  box-shadow: 0 0 0 1px rgba(255, 143, 171, 0.25);
+  color: var(--dk-text, #fff8fa);
+}
+
+.signup-account-option-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--dk-gold-soft, #f5d9a8);
+}
+
+.signup-account-option.is-active .signup-account-option-label {
+  color: #fff8fa;
+}
+
+.signup-account-option-hint {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+
+.signup-team-note {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--dk-text-muted, #e0cdd6);
+  margin: -0.35rem 0 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  background: rgba(232, 184, 109, 0.1);
+  border: 1px solid rgba(232, 184, 109, 0.28);
+}
+
+.signup-form .form-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dk-text-muted, #e0cdd6);
+  margin-bottom: 0.35rem;
+}
+
+.signup-input {
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 143, 171, 0.35);
+  color: var(--dk-text, #fff8fa);
+}
+
+.signup-input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--dk-accent-bright, #ff8fab);
+  box-shadow: 0 0 0 0.2rem rgba(255, 143, 171, 0.2);
+  color: var(--dk-text, #fff8fa);
+}
+
+.signup-input::placeholder {
+  color: rgba(255, 248, 250, 0.45);
+}
+
+.signup-submit {
+  min-height: 46px;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.signup-footer-text {
+  font-size: 0.88rem;
+  color: var(--dk-text-muted, #e0cdd6);
+}
+
+.signup-staff-link {
+  font-size: 0.82rem;
+  color: var(--dk-text-muted, #e0cdd6);
+  margin-top: 0.65rem;
+}
+
+.signup-link {
+  color: var(--dk-accent-soft, #f8d0de);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  color: var(--dk-gold-soft, #f5d9a8);
+}
+
+@media (max-width: 576px) {
+  .signup-page {
+    min-height: auto;
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .signup-card {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .signup-card-header {
+    padding: 1.15rem 1rem 0.85rem;
+  }
+
+  .signup-title {
+    font-size: 1.2rem;
+  }
+
+  .signup-card-body {
+    padding: 1rem;
+  }
+}

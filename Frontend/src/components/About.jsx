@@ -1,30 +1,96 @@
-import React from 'react';
+import { Link } from 'react-router-dom'
+import './css/About.css'
+
+const highlights = [
+  {
+    id: 'quality',
+    icon: 'fa-solid fa-gem',
+    title: 'Top-notch services',
+    text: 'Premium gels, builders, tips and acrylics using trusted brands — finished with care for event-ready nails every time.',
+  },
+  {
+    id: 'reliability',
+    icon: 'fa-solid fa-shield-heart',
+    title: 'Reliability',
+    text: 'Confirmed 2-hour slots, skilled staff, and clear booking updates so you always know when and where your appointment is.',
+  },
+  {
+    id: 'convenience',
+    icon: 'fa-solid fa-mobile-screen-button',
+    title: 'Convenience',
+    text: 'Book online in minutes, pick your time slot, and manage appointments from your phone — no back-and-forth needed.',
+  },
+]
 
 const AboutPage = () => {
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">About Us</h1>
-      <div className="row">
-        <div className="col-md-6 offset-md-3">
-          <p className="lead">
-            We are dedicated to providing top-notch services to our clients and ensuring a relaxing
-            and enjoyable experience.
+    <section className="section-band section-band--alt about-page">
+      <div className="container page-section about-section">
+        <header className="about-header text-center">
+          <span className="about-eyebrow">Why Dopekit</span>
+          <h1 className="about-title">About us</h1>
+          <p className="about-lead">
+            Dopekit is your go-to nail studio in Kenya — where stunning designs meet a smooth,
+            stress-free booking experience from start to finish.
           </p>
-          <p className="text-muted">
-            Contact us for more information:
+        </header>
+
+        <div className="row g-3 g-md-4 about-highlights">
+          {highlights.map(({ id, icon, title, text }) => (
+            <div key={id} className="col-md-4">
+              <article className="about-highlight-card h-100">
+                <span className="about-highlight-icon" aria-hidden="true">
+                  <i className={icon} />
+                </span>
+                <h2 className="about-highlight-title">{title}</h2>
+                <p className="about-highlight-text">{text}</p>
+              </article>
+            </div>
+          ))}
+        </div>
+
+        <div className="about-story">
+          <h2 className="about-story-title">Our promise</h2>
+          <p>
+            Whether you want a quick gel refresh or a full set with custom art, we focus on three
+            things: <strong>quality work</strong>, <strong>showing up when we say we will</strong>,
+            and making it <strong>easy for you to book and rebook</strong>. That is the Dopekit
+            standard — polished nails without the hassle.
           </p>
-          <ul className="list-unstyled">
+          <div className="about-actions">
+            <Link to="/Services" className="btn btn-primary">
+              View services
+            </Link>
+            <Link to="/Contact" className="btn btn-outline-secondary">
+              Get in touch
+            </Link>
+          </div>
+        </div>
+
+        <div className="about-contact">
+          <h2 className="about-contact-title">Contact us</h2>
+          <ul className="about-contact-list">
             <li>
-              <strong>Email:</strong> smuknails@gmail.com
+              <i className="fa-solid fa-envelope" aria-hidden="true" />
+              <span>
+                <strong>Email</strong>
+                <a href="mailto:dopekit@gmail.com">dopekit@gmail.com</a>
+              </span>
             </li>
             <li>
-              <strong>Phone:</strong> 0790331108 / 0743548780
+              <i className="fa-solid fa-phone" aria-hidden="true" />
+              <span>
+                <strong>Phone</strong>
+                <a href="tel:+254790331108">0790 331 108</a>
+                <span className="about-contact-sep"> / </span>
+                <a href="tel:+254743548780">0743 548 780</a>
+              </span>
             </li>
           </ul>
         </div>
       </div>
-    </div>
-  );
-};
+    </section>
+  )
+}
 
-export default AboutPage;
+export default AboutPage
